@@ -1,0 +1,42 @@
+version: "2"
+
+formatters:
+  enable:
+    - gci
+    - goimports
+    - gofumpt
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/b4prog/kingraph)
+      custom-order: true
+      no-inline-comments: true
+      no-prefix-comments: true
+    gofumpt:
+      module-path: github.com/b4prog/kingraph
+      extra-rules: true
+    goimports:
+      local-prefixes:
+        - github.com/b4prog/kingraph
+  exclusions:
+    generated: strict
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+linters:
+  enable:
+    - errcheck
+    - gocritic
+    - gosec
+    - govet
+    - ineffassign
+    - revive
+    - staticcheck
+    - unused
+
+run:
+  relative-path-mode: gomod

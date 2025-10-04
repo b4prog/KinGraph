@@ -1,0 +1,114 @@
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
+indent_size = tab   # one tab per indent level
+tab_width = 2
+
+# --- Text/Docs ---------------------------------------------------------------
+[*.md]
+# Preserve trailing spaces because Markdown uses them for hard line breaks.
+trim_trailing_whitespace = false
+
+[*.mdx]
+trim_trailing_whitespace = false
+
+# --- YAML (CI, GitHub Actions, k8s, etc.) -----------------------------------
+# YAML forbids tabs
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+tab_width = 2
+
+# --- Go ----------------------------------------------------------------------
+[*.go]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+[go.mod]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+[go.sum]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+[*.proto]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+# --- Angular / Front-end -----------------------------------------------------
+[*.{ts,tsx,js,jsx,mjs,cjs}]
+indent_style = space
+indent_size = 2
+
+[*.{html,htm}]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+[*.{css,scss,less}]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+# JSON family (package.json, angular.json, tsconfig*.json, .eslintrc.json, .prettierrc.json, etc.)
+[*.json]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+# JSON with comments (e.g., .eslintrc.cjs/.tsconfig.jsonc if used)
+[*.jsonc]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+# --- Shell / Make / Docker ---------------------------------------------------
+[*.sh]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+end_of_line = lf
+
+# make strictly requires tabs in recipe lines
+[Makefile]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+end_of_line = lf
+
+[*.mk]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+end_of_line = lf
+
+[Dockerfile]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+# --- Configs / Misc ----------------------------------------------------------
+[.env*]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+# gitignore/gitattributes/editorconfig copies
+[*.{gitignore,gitattributes,editorconfig}]
+end_of_line = lf
+
+# IDE settings or misc text files
+[*.{txt,log}]
+indent_style = tab
+indent_size = tab
+tab_width = 2

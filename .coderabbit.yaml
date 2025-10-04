@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: en
+
+reviews:
+  review_status: true
+  profile: assertive
+  high_level_summary: true
+  poem: false
+
+  auto_review:
+    enabled: true
+    drafts: true
+
+  path_filters:
+    - "!**/dist/**"
+    - "!**/build/**"
+    - "!**/coverage/**"
+    - "!**/.angular/**"
+    - "!**/.next/**"
+    - "!**/.turbo/**"
+    - "!**/.cache/**"
+    - "!**/node_modules/**"
+    - "!**/*.lock"
+    - "!**/*.log"
+    - "!**/*.png"
+    - "!**/*.jpg"
+    - "!**/*.jpeg"
+    - "!**/*.gif"
+    - "!**/*.svg"
+    - "!**/*.ico"
+    - "!**/*.pdf"
+
+  tools:
+    golangci-lint:
+      enabled: true
+      config_file: ".golangci.yaml"
+    gitleaks:
+      enabled: true
+    yamllint:
+      enabled: true
+    actionlint:
+      enabled: true
+    shellcheck:
+      enabled: true
+    markdownlint:
+      enabled: true
+    osvScanner:
+      enabled: true
+    github-checks:
+      enabled: true
+      timeout_ms: 300000

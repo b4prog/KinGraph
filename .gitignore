@@ -26,7 +26,30 @@ go.work.sum
 
 # env file
 .env
+.env.*
 
-# Editor/IDE
-# .idea/
-# .vscode/
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# MacOS
+.DS_Store
+
+# build artifacts
+backend/bin/
+frontend/*/dist/
+
+# Angular cache
+frontend/*/.angular/
+**/.angular/
+
+# deps
+node_modules/
+
+# snapshots
+.snapshots/

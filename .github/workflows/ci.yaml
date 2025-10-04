@@ -1,0 +1,132 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-go:
+    name: Backend (Go)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          check-latest: true
+          cache: true
+          cache-dependency-path: backend/go.sum
+
+      - name: Verify formatting (gofmt)
+        run: |
+          unformatted=$(gofmt -l .)
+          if [[ -n "$unformatted" ]]; then
+            echo "These files are not gofmt-formatted:"
+            echo "$unformatted"
+            echo "Run: gofmt -w ./backend (from repository root: gofmt -w backend)"
+            echo "Diff:"
+            for f in $unformatted; do
+              echo "---- $f"
+              diff -u "$f" <(gofmt "$f") || true
+            done
+            exit 1
+          fi
+
+      - name: Tidy (verify no changes)
+        run: |
+          go mod tidy
+          changes=$(git status --porcelain go.mod go.sum 2>/dev/null || true)
+          if [[ -n "$changes" ]]; then
+            echo "go.mod/go.sum changed after 'go mod tidy':"
+            echo "$changes"
+            git diff go.mod go.sum 2>/dev/null || true
+            echo "Run 'go mod tidy' locally and commit the changes."
+            exit 1
+          fi
+
+      - name: Vet
+        run: go vet -mod=readonly ./...
+
+      - name: Build
+        run: go build -mod=readonly ./...
+
+      - name: Test (race, coverage)
+        run: go test -mod=readonly -race -covermode=atomic -coverprofile=coverage.out ./...
+
+      - name: Upload coverage (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage.out
+          if-no-files-found: ignore
+
+  frontend-web:
+    name: Frontend (Angular)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: frontend/kingraph-web
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: npm
+          cache-dependency-path: frontend/kingraph-web/package-lock.json
+
+      - name: Clean install
+        run: npm ci
+
+      - name: Prettier check
+        run: npm run prettier:check
+      - name: ESLint
+        run: npm run lint
+
+      - name: Build (production)
+        env:
+          CI: "true"
+        run: npm run build
+
+      - name: Test (headless, coverage)
+        env:
+          CI: "true"
+        run: |
+          # Force headless mode if test config doesn't specify it explicitly
+          npx ng test --browsers=ChromeHeadless --watch=false --code-coverage
+
+      - name: Upload coverage (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: |
+            frontend/kingraph-web/coverage/**/lcov.info
+            frontend/kingraph-web/coverage/**/*.html
+          if-no-files-found: ignore
